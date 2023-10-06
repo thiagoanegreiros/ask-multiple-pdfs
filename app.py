@@ -31,11 +31,14 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
-    embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
+    # embeddings = OpenAIEmbeddings()
+    print('Começando a carregar modelo')
+
+    embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl", model_kwargs = {"device" : "cpu"})
+    print('Modelo carregado')
+
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
-
 
 def get_conversation_chain(vectorstore):
     llm = ChatOpenAI()
@@ -91,9 +94,11 @@ def main():
 
                 # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
+                print('Peguei os text chunks')
 
                 # create vector store
                 vectorstore = get_vectorstore(text_chunks)
+                print('Peguei o vector store')
 
                 # create conversation chain
                 st.session_state.conversation = get_conversation_chain(
